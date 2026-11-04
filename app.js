@@ -1,8 +1,8 @@
-﻿(function(){
+(function(){
 'use strict';
 var data=null;
 var pptFiles=window.PPT_FILES||[];
-var state={bankTab:'practice',bankChapter:'all',reciteChapter:'all',mapModule:'immunology',bankModule:'immunology',reciteModule:'immunology',pptModule:'immunology'};
+var state={bankTab:'practice',bankChapter:'all',bankType:'all',reciteChapter:'all',mapModule:'immunology',bankModule:'immunology',reciteModule:'immunology',pptModule:'immunology'};
 var mastery=new Set();
 try{mastery=new Set(JSON.parse(localStorage.getItem('disease-biology-mastery-v1')||'[]'));}catch(e){}
 var app=document.getElementById('app');
@@ -57,7 +57,7 @@ navItem('module/parasitology','layers','寄生虫学',r.path==='module/parasitol
 function home(){
 var cards=[
 {href:'map',icon:'☷',title:'思维导图',desc:'从整门课进入，沿着章节与机制线索梳理知识。'},
-{href:'bank',icon:'▤',title:'题库',desc:'课件自测与考试回忆分开查看，按模块定位考点。'},
+{href:'bank',icon:'▤',title:'题库',desc:'按模块、题源和题型查找课件自测、考试回忆与旧资料核对题。'},
 {href:'recite',icon:'▣',title:'问答题背诵',desc:'遮住答案先回忆，再按来源页码查缺补漏。'},
 {href:'ppt',icon:'▧',title:'课件 PPT',desc:'按授课顺序找到原始课件，下载后查看。'}
 ];
@@ -104,28 +104,35 @@ function placeholderFor(m){return '<div class="placeholder"><div class="eyebrow"
 function chapterPage(id){
 var c=chapter(id);if(!c)return notFound();
 var recalls=data.recall.filter(function(x){return x.citation.indexOf(id)>=0;});
+var verified=(data.legacy||[]).filter(function(x){return x.chapter===id;});
 var cards=data.recitation.filter(function(x){return x.chapter===id;});
 return '<div class="page-head"><div><div class="eyebrow">IMMUNOLOGY / CHAPTER '+String(c.number).padStart(2,'0')+'</div><h1>'+esc(c.title)+'</h1><p>按课件知识层级整理 · 来源可追溯</p></div><a class="link" href="#module/immunology">← 返回免疫学目录</a></div>'+
-'<div class="chapter-meta"><span class="meta-chip">'+esc(c.filename)+'</span><span class="meta-chip">'+c.topics.length+' 个知识小节</span><span class="meta-chip">'+recalls.length+' 条回忆考点</span></div>'+
+'<div class="chapter-meta"><span class="meta-chip">'+esc(c.filename)+'</span><span class="meta-chip">'+c.topics.length+' 个知识小节</span><span class="meta-chip">'+recalls.length+' 条回忆考点</span><span class="meta-chip">'+verified.length+' 条旧资料核对题</span></div>'+
 '<div class="chapter-layout"><nav class="chapter-aside"><strong>本章目录</strong>'+c.topics.map(function(t,i){return '<a href="#chapter/'+id+'/'+id+'-'+(i+1)+'">'+String(i+1).padStart(2,'0')+' '+esc(t.title)+'</a>';}).join('')+'</nav><div>'+c.topics.map(function(t,i){return '<section class="topic-card" id="'+id+'-'+(i+1)+'"><small>SECTION '+String(i+1).padStart(2,'0')+'</small><h2>'+esc(t.title)+'</h2><p>'+esc(clean(t.body))+'</p>'+sourceChip(t.citation)+'</section>';}).join('')+
-'<div class="related-box"><h3>继续练习这一章</h3><div class="related-links"><a href="#bank">题库 · '+recalls.length+' 条回忆考点</a><a href="#recite">问答背诵 · '+cards.length+' 张卡片</a><a href="#map">返回免疫学导图</a></div></div></div></div>';
+'<div class="related-box"><h3>继续练习这一章</h3><div class="related-links"><a href="#bank" data-bank-module="immunology" data-bank-tab="legacy">旧资料核对题 · '+verified.length+' 条</a><a href="#bank" data-bank-module="immunology" data-bank-tab="recall">考试回忆 · '+recalls.length+' 条</a><a href="#recite">问答背诵 · '+cards.length+' 张卡片</a><a href="#map">返回免疫学导图</a></div></div></div></div>';
 }
 function moduleSelect(kind){return '<select class="filter-select" data-filter="'+kind+'Module" aria-label="选择学科模块">'+data.modules.map(function(m){return '<option value="'+m.id+'"'+selected(m.id,state[kind+'Module'])+'>'+esc(m.name)+' · '+m.status+'</option>';}).join('')+'</select>';}
 function chapterSelect(kind){return '<select class="filter-select" data-filter="'+kind+'Chapter" aria-label="选择章节"><option value="all">全部章节</option>'+data.chapters.map(function(c){return '<option value="'+c.id+'"'+selected(c.id,state[kind+'Chapter'])+'>'+String(c.number).padStart(2,'0')+' '+esc(c.title)+'</option>';}).join('')+'</select>';}
+function questionTypeName(v){return {single:'单选题',multiple:'多选题',term:'名词解释',short:'简答题',case:'案例题'}[v]||'待分类';}
+function typeSelect(){return '<select class="filter-select" data-filter="bankType" aria-label="选择题型"><option value="all">全部题型</option>'+['single','multiple','term','short','case'].map(function(t){return '<option value="'+t+'"'+selected(t,state.bankType)+'>'+questionTypeName(t)+'</option>';}).join('')+'</select>';}
 function bankPage(){
-var isPractice=state.bankTab==='practice';
 var m=module(state.bankModule)||data.modules[0];
-var list=(isPractice?data.practice:data.recall).filter(function(q){
+var tab=state.bankTab;
+var all=tab==='practice'?data.practice:tab==='recall'?data.recall:(data.legacy||[]);
+var list=all.filter(function(q){
 if((q.module||'immunology')!==m.id)return false;
-return m.id!=='immunology'||state.bankChapter==='all'||(isPractice?q.chapter===state.bankChapter:(q.citation||'').indexOf(state.bankChapter)>=0);
+if(state.bankType!=='all'&&(q.questionType||'single')!==state.bankType)return false;
+return m.id!=='immunology'||state.bankChapter==='all'||(tab==='recall'?(q.citation||'').indexOf(state.bankChapter)>=0:q.chapter===state.bankChapter);
 });
-var head='<div class="page-head"><div><div class="eyebrow">QUESTION LIBRARY</div><h1>题库</h1><p>按模块与章节查题。新编自测和考试回忆分开标注来源。</p></div></div>'+
-'<div class="filters">'+moduleSelect('bank')+'<div class="tabs"><button class="tab'+(isPractice?' active':'')+'" data-tab="practice">考点自测</button><button class="tab'+(!isPractice?' active':'')+'" data-tab="recall">考试回忆</button></div>'+(m.id==='immunology'?chapterSelect('bank'):'')+'<span class="count">'+list.length+' 条</span></div>';
-var intro=isPractice?(m.id==='immunology'
+var head='<div class="page-head"><div><div class="eyebrow">QUESTION LIBRARY</div><h1>题库</h1><p>按模块、章节、题源与题型查题；旧资料题标出 PDF 与对应课件页码。</p></div></div>'+
+'<div class="filters">'+moduleSelect('bank')+'<div class="tabs"><button class="tab'+(tab==='practice'?' active':'')+'" data-tab="practice">考点自测</button><button class="tab'+(tab==='recall'?' active':'')+'" data-tab="recall">考试回忆</button><button class="tab'+(tab==='legacy'?' active':'')+'" data-tab="legacy">旧资料核对题</button></div>'+(m.id==='immunology'?chapterSelect('bank'):'')+typeSelect()+'<span class="count">'+list.length+' 条</span></div>';
+var intro=tab==='practice'?(m.id==='immunology'
 ?'<div class="subtle-alert">免疫学自测依据课件编写，难度参照考试回忆题；不等同于历年考试原题。</div>'
-:'<div class="subtle-alert">本模块自测依据回忆题的考点新编，属于练习题，尚未按相应课件逐页核对。模块学习状态仍以课程首页为准。</div>')
-:'<div class="subtle-alert">此栏按用户提供的回忆图片整理。点击后查看原图中可辨认的答案；原图未给出的题干、选项或答案会明确标记，不作补写。</div>';
-return head+intro+'<div class="question-list">'+(list.length?list.map(isPractice?practiceCard:recallCard).join(''):'<div class="empty">此模块暂没有该类题目。</div>')+'</div>';
+:'<div class="subtle-alert">本模块自测依据回忆题考点新编，尚未按相应课件逐页核对。</div>')
+:tab==='recall'?'<div class="subtle-alert">此栏来自考试回忆图片，并非正式试卷。答案按可辨认内容及课件核对；题干不全或矛盾处会明确标记。</div>'
+:'<div class="subtle-alert">选自旧版整合资料，仅收录与当前免疫学课件核对一致的题目；参考答案以当前课件为准。其他学科题目等待对应课件，不作为已学内容或历年真题。</div>';
+var card=tab==='practice'?practiceCard:tab==='recall'?recallCard:legacyCard;
+return head+intro+'<div class="question-list">'+(list.length?list.map(card).join(''):'<div class="empty">此筛选下暂没有已核对的题目。</div>')+'</div>';
 }
 function practiceCard(q){
 var m=module(q.module||'immunology');
@@ -133,7 +140,7 @@ var href=q.chapter?'#chapter/'+q.chapter:'#module/'+m.id;
 var link=q.chapter?'查看章节 →':'查看模块 →';
 var ref=q.reference?'<a class="source-ref" href="'+esc(q.reference)+'" target="_blank" rel="noopener">资料核对 ↗</a>':'';
 var progress=q.progress?'<span class="question-progress">'+esc(q.progress)+'</span>':'';
-return '<article class="question" data-question="'+q.id+'"><div class="question-top"><span class="type">'+esc(q.kind||'考点自测')+' · 单选</span><span class="qid">'+esc(q.id)+'</span></div>'+progress+'<h3>'+esc(q.prompt)+'</h3><div class="choices">'+q.options.map(function(o,i){return '<button class="choice" data-choice="'+i+'" data-qid="'+q.id+'"><b>'+String.fromCharCode(65+i)+'</b>'+esc(o)+'</button>';}).join('')+'</div><div class="result" aria-live="polite"></div><div class="question-foot"><span>'+esc(q.source)+' '+ref+'</span><a class="link" href="'+href+'">'+link+'</a></div></article>';
+return '<article class="question" data-question="'+q.id+'"><div class="question-top"><span class="type">'+esc(q.kind||'考点自测')+' · '+questionTypeName(q.questionType||'single')+'</span><span class="qid">'+esc(q.id)+'</span></div>'+progress+'<h3>'+esc(q.prompt)+'</h3><div class="choices">'+q.options.map(function(o,i){return '<button class="choice" data-choice="'+i+'" data-qid="'+q.id+'"><b>'+String.fromCharCode(65+i)+'</b>'+esc(o)+'</button>';}).join('')+'</div><div class="result" aria-live="polite"></div><div class="question-foot"><span>'+esc(q.source)+' '+ref+'</span><a class="link" href="'+href+'">'+link+'</a></div></article>';
 }
 function recallCard(q){
 var isImmune=(q.module||'immunology')==='immunology';
@@ -145,7 +152,13 @@ var extra=q.external?'<a class="link" href="'+esc(q.external)+'" target="_blank"
 var answer=q.answer||q.note||'原资料未提供可确认的答案。';
 var note=q.answer&&q.note?'<p class="answer-note">'+esc(q.note)+'</p>':'';
 var progress=q.progress?'<span class="question-progress">'+esc(q.progress)+'</span>':'';
-return '<article class="question recall-card"><div class="question-top"><span class="type">考试回忆 · 先答后看</span><span class="qid">'+esc(q.id)+'</span></div>'+progress+'<h3>'+esc(q.stem)+'</h3><button class="tiny-btn primary recall-reveal" data-reveal-recall>'+(q.answer?'查看参考答案':'查看核对状态')+'</button><div class="recall-answer" hidden><strong>'+esc(q.answerLabel||'参考答案')+'</strong><p>'+esc(answer).replace(/\n/g,'<br>')+'</p>'+note+'<a href="./assets/'+encodeURIComponent(q.image)+'" target="_blank" rel="noopener">查看回忆原图 ↗</a> '+extra+'</div><div class="question-foot"><span>'+esc(source)+'</span><a class="link" href="'+href+'">'+link+'</a></div></article>';
+return '<article class="question recall-card"><div class="question-top"><span class="type">考试回忆 · '+questionTypeName(q.questionType||'single')+'</span><span class="qid">'+esc(q.id)+'</span></div>'+progress+'<h3>'+esc(q.stem)+'</h3><button class="tiny-btn primary recall-reveal" data-reveal-recall>'+(q.answer?'查看参考答案':'查看核对状态')+'</button><div class="recall-answer" hidden><strong>'+esc(q.answerLabel||'参考答案')+'</strong><p>'+esc(answer).replace(/\n/g,'<br>')+'</p>'+note+'<a href="./assets/'+encodeURIComponent(q.image)+'" target="_blank" rel="noopener">查看回忆原图 ↗</a> '+extra+'</div><div class="question-foot"><span>'+esc(source)+'</span><a class="link" href="'+href+'">'+link+'</a></div></article>';
+}
+function legacyCard(q){
+var c=chapter(q.chapter);
+var options=q.options?'<div class="legacy-options">'+q.options.map(function(o,i){return '<div class="legacy-option"><b>'+String.fromCharCode(65+i)+'</b><span>'+esc(o)+'</span></div>';}).join('')+'</div>':'';
+var answer=q.options?q.answer.split('').map(function(letter){return letter+' · '+q.options[letter.charCodeAt(0)-65];}).join('；'):q.answer;
+return '<article class="question legacy-card"><div class="question-top"><span class="type">旧资料核对题 · '+questionTypeName(q.questionType)+'</span><span class="qid">'+esc(q.id)+'</span></div><h3>'+esc(q.prompt)+'</h3>'+options+'<button class="tiny-btn primary recall-reveal" data-reveal-legacy>查看参考答案</button><div class="recall-answer" hidden><strong>课件核对后的参考答案</strong><p>'+esc(answer)+'</p></div><div class="question-foot legacy-foot"><span>旧版整合资料 PDF 第'+q.pdfPage+'页 · '+esc(q.originalNo)+'<br>对应课件：'+esc(sourceText(q.pptCitation))+'</span><a class="link" href="#chapter/'+q.chapter+'">查看'+esc(c?c.title:'章节')+' →</a></div></article>';
 }
 function recitePage(){
 var cards=data.recitation.filter(function(x){return state.reciteChapter==='all'||x.chapter===state.reciteChapter;});
@@ -163,9 +176,10 @@ if(term){
 data.chapters.forEach(function(c){c.topics.forEach(function(t){if((c.title+' '+t.title+' '+t.body).toLowerCase().indexOf(term)>=0)results.push({type:'知识点 · '+c.title,title:t.title,body:clean(t.body),href:'#chapter/'+c.id});});});
 data.recitation.forEach(function(c){if((c.prompt+' '+c.answer).toLowerCase().indexOf(term)>=0)results.push({type:'问答背诵 · '+chapter(c.chapter).title,title:c.prompt,body:c.answer,href:'#recite'});});
 data.recall.forEach(function(q){if((q.stem+' '+q.citation+' '+(q.source||'')).toLowerCase().indexOf(term)>=0)results.push({type:'考试回忆 · '+(module(q.module||'immunology')||{}).name,title:q.stem,body:q.source||sourceText(q.citation),href:'#bank',bankModule:q.module||'immunology'});});
+(data.legacy||[]).forEach(function(q){if((q.prompt+' '+q.answer+' '+q.pptCitation).toLowerCase().indexOf(term)>=0)results.push({type:'旧资料核对题 · '+questionTypeName(q.questionType),title:q.prompt,body:'PDF 第'+q.pdfPage+'页 · '+sourceText(q.pptCitation),href:'#bank',bankModule:'immunology',bankTab:'legacy'});});
 }
 return '<div class="page-head"><div><div class="eyebrow">SEARCH</div><h1>搜索结果</h1><p>关键词：'+esc(query||'（空）')+' · 共 '+results.length+' 条</p></div></div>'+
-(results.length?'<div class="search-results">'+results.slice(0,80).map(function(x){return '<a class="search-result" href="'+x.href+'"'+(x.bankModule?' data-bank-module="'+x.bankModule+'" data-bank-tab="recall"':'')+'><small>'+esc(x.type)+'</small><h3>'+esc(x.title)+'</h3><p>'+esc(x.body.length>160?x.body.slice(0,160)+'…':x.body)+'</p></a>';}).join('')+'</div>':'<div class="empty">没有找到相关条目。可以换一个关键词，或从模块目录进入。</div>');
+(results.length?'<div class="search-results">'+results.slice(0,80).map(function(x){return '<a class="search-result" href="'+x.href+'"'+(x.bankModule?' data-bank-module="'+x.bankModule+'" data-bank-tab="'+(x.bankTab||'recall')+'"':'')+'><small>'+esc(x.type)+'</small><h3>'+esc(x.title)+'</h3><p>'+esc(x.body.length>160?x.body.slice(0,160)+'…':x.body)+'</p></a>';}).join('')+'</div>':'<div class="empty">没有找到相关条目。可以换一个关键词，或从模块目录进入。</div>');
 }
 function notFound(){return '<div class="placeholder"><div class="big">页面未找到</div><p>这个入口可能尚未建立。</p><a class="link" href="#home">返回首页 →</a></div>';}
 function page(r){
@@ -193,14 +207,15 @@ app.addEventListener('click',function(e){
 var menu=e.target.closest('#menuBtn');if(menu){document.getElementById('side').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');return;}
 if(e.target.closest('#overlay')){document.getElementById('side').classList.remove('open');document.getElementById('overlay').classList.remove('show');return;}
 var nav=e.target.closest('.side a');if(nav){document.getElementById('side').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
-var bankLink=e.target.closest('[data-bank-module]');if(bankLink){e.preventDefault();state.bankModule=bankLink.dataset.bankModule;state.bankChapter='all';state.bankTab=bankLink.dataset.bankTab||'recall';if(location.hash==='#bank')render(false);else go('#bank');return;}
-var tab=e.target.closest('[data-tab]');if(tab){state.bankTab=tab.dataset.tab;render(true);return;}
+var bankLink=e.target.closest('[data-bank-module]');if(bankLink){e.preventDefault();state.bankModule=bankLink.dataset.bankModule;state.bankChapter='all';state.bankType='all';state.bankTab=bankLink.dataset.bankTab||'recall';if(location.hash==='#bank')render(false);else go('#bank');return;}
+var tab=e.target.closest('[data-tab]');if(tab){state.bankTab=tab.dataset.tab;state.bankType='all';state.bankChapter='all';render(true);return;}
 var choice=e.target.closest('[data-choice]');if(choice){
 var q=data.practice.find(function(x){return x.id===choice.dataset.qid;});var card=choice.closest('.question');var index=Number(choice.dataset.choice);
 card.querySelectorAll('.choice').forEach(function(b){b.disabled=true;if(Number(b.dataset.choice)===q.answer)b.classList.add('correct');});
 if(index!==q.answer)choice.classList.add('wrong');
 var result=card.querySelector('.result');result.className='result '+(index===q.answer?'good':'bad');result.textContent=index===q.answer?'答对了':'答案：'+String.fromCharCode(65+q.answer)+' · '+q.options[q.answer];
 return;}
+var legacyReveal=e.target.closest('[data-reveal-legacy]');if(legacyReveal){var legacyAnswer=legacyReveal.closest('.legacy-card').querySelector('.recall-answer');legacyAnswer.hidden=!legacyAnswer.hidden;legacyReveal.textContent=legacyAnswer.hidden?'查看参考答案':'收起答案';return;}
 var recallReveal=e.target.closest('[data-reveal-recall]');if(recallReveal){var answer=recallReveal.closest('.recall-card').querySelector('.recall-answer');answer.hidden=!answer.hidden;recallReveal.textContent=answer.hidden?(recallReveal.closest('.recall-card').querySelector('.recall-answer strong').textContent==='原图待核对'?'查看核对状态':'查看参考答案'):'收起';return;}
 var reveal=e.target.closest('[data-reveal]');if(reveal){var card=reveal.closest('.flashcard');var answer=card.querySelector('.answer');answer.hidden=!answer.hidden;reveal.textContent=answer.hidden?'显示答案':'收起答案';return;}
 var mark=e.target.closest('[data-mastery]');if(mark){var id=mark.dataset.mastery;if(mastery.has(id))mastery.delete(id);else mastery.add(id);try{localStorage.setItem('disease-biology-mastery-v1',JSON.stringify(Array.from(mastery)));}catch(err){}render(true);return;}
@@ -208,12 +223,14 @@ var mark=e.target.closest('[data-mastery]');if(mark){var id=mark.dataset.mastery
 app.addEventListener('change',function(e){
 var f=e.target.dataset.filter;if(!f)return;
 state[f]=e.target.value;
-if(f==='bankModule'&&e.target.value!=='immunology')state.bankChapter='all';
+if(f==='bankModule'){state.bankChapter='all';state.bankType='all';}
 if(f==='reciteModule'&&e.target.value!=='immunology')state.reciteChapter='all';
 render(true);
 });
 app.addEventListener('submit',function(e){if(e.target.id==='globalSearch'){e.preventDefault();var q=e.target.elements.q.value.trim();go('#search?q='+encodeURIComponent(q));}});
 if(window.COURSE_DATA){data=window.COURSE_DATA;render(false);}else fetch('./content.json').then(function(r){if(!r.ok)throw new Error('内容文件读取失败');return r.json();}).then(function(d){data=d;render(false);}).catch(function(err){app.innerHTML='<div class="boot"><div class="boot-mark">!</div><p>课程资料暂时无法载入，请刷新页面。</p><small>'+esc(err.message)+'</small></div>';});
 })();
+
+
 
 
