@@ -48,3 +48,71 @@
 .legacy-option b{flex:none;display:grid;place-items:center;width:21px;height:21px;border-radius:6px;background:#edf3f0;color:var(--teal);font-size:10px}
 .legacy-foot span{font-size:11px;line-height:1.7}
 .legacy-card .recall-answer p{white-space:pre-line}
+/* Explicit-submit quizzes and browser-local review notebook. */
+.quiz-instruction{font-size:12px;line-height:1.7;color:var(--muted);margin:-3px 0 13px}
+.choice{align-items:flex-start;min-height:42px;width:100%;line-height:1.65}
+.choice b{flex:none;margin-top:1px}
+.choice-copy{flex:1;min-width:0;overflow-wrap:anywhere}
+.choice-mark{flex:none;font-size:10px;font-weight:800;white-space:nowrap;padding-top:3px}
+.choice:disabled{cursor:default;opacity:1}
+.choice:disabled:hover{filter:none}
+.quiz-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px}
+.quiz-actions .tiny-btn{min-height:40px}
+.tiny-btn:disabled{cursor:not-allowed;opacity:.48;filter:none}
+.selection-hint{color:var(--muted);font-size:11px;line-height:1.6}
+.quiz-feedback{padding:15px 16px;border:1px solid #bcdbcd;border-left-width:4px;border-radius:9px;background:#f1faf5;margin-top:16px;font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+.quiz-feedback>strong{font-size:15px;color:#18644e}
+.quiz-feedback p{margin:7px 0;color:var(--ink2)}
+.quiz-feedback.is-wrong{background:#fff7f1;border-color:#e4c2af}
+.quiz-feedback.is-wrong>strong{color:#9c452d}
+.quiz-analysis{border-top:1px solid rgba(64,101,83,.16);padding-top:10px;margin-top:10px}
+.quiz-analysis>b{font-size:12px;color:var(--ink)}
+.quiz-feedback .save-hint{font-size:11px;color:var(--teal)}
+.storage-error{font-size:12px;line-height:1.7;color:#a04729!important}
+.notebook-entry-banner{display:flex;align-items:center;justify-content:space-between;gap:20px;background:#edf4ed;border:1px solid #d2e1d5;border-radius:13px;padding:20px 24px;margin-top:18px}
+.notebook-entry-banner strong{display:block;font-size:17px}
+.notebook-entry-banner small{display:block;color:#61786d;font-size:12px;line-height:1.7;margin-top:5px}
+.notebook-entry-count{white-space:nowrap;color:var(--teal);font-size:13px}
+.notebook-entry-count b{font-size:22px;margin-right:3px}
+.notebook-summary{display:flex;gap:12px;margin:0 0 13px}
+.notebook-summary>div{background:white;border:1px solid var(--line);border-radius:11px;padding:18px 24px;flex:1;max-width:235px;display:flex;align-items:center;gap:12px}
+.notebook-summary strong{font-size:27px;color:var(--teal)}
+.notebook-summary span{font-size:12px;color:var(--muted)}
+.notebook-note{font-size:12px;line-height:1.8;color:var(--muted);margin:12px 0 20px}
+.notebook-item{background:#edf2ee;border:1px solid #d8e1da;border-radius:15px;padding:12px;min-width:0}
+.notebook-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10px;color:#687b71;margin:0 2px 10px}
+.notebook-state{font-weight:800;padding:4px 8px;border-radius:6px;background:#fff2dd;color:#805b21}
+.notebook-state.mastered{background:#dcefe3;color:#216d4c}
+.notebook-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;flex-wrap:wrap}
+.remove-mistake{color:#8d6051}
+.notebook-empty{grid-column:1/-1;line-height:2.1}
+.notebook-empty .link{margin-top:12px}
+.side{overflow-y:auto}
+@media(max-width:650px){.notebook-entry-banner{align-items:flex-start;flex-direction:column;gap:13px;padding:18px}.notebook-summary{gap:7px}.notebook-summary>div{padding:12px;display:block;text-align:center}.notebook-summary strong,.notebook-summary span{display:block}.notebook-summary strong{font-size:24px}.choice-mark{font-size:9px}.quiz-feedback{padding:13px}.notebook-meta{font-size:10px}.notebook-item{padding:9px}.quiz-actions{align-items:flex-start;flex-direction:column;gap:7px}.notebook-tools .tiny-btn{min-height:40px}}
+/* Cell and molecule knowledge atlas. */
+.kg-home-banner{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:18px;border:1px solid #cadcd5;border-radius:14px;padding:23px 25px;background:linear-gradient(110deg,#e7f2ec,#f6f6ee)}
+.kg-home-banner .eyebrow{display:block;margin-bottom:7px}.kg-home-banner strong{display:block;font-size:21px}.kg-home-banner p{font-size:13px;line-height:1.8;color:#5c766d;margin:8px 0 0}.kg-home-action{font-size:13px;font-weight:800;color:var(--teal);white-space:nowrap}
+.kg-intro-banner{background:#eaf3ed;border:1px solid #d3e2d8;border-radius:14px;padding:23px 25px;display:flex;align-items:center;justify-content:space-between;gap:26px;margin-bottom:22px}
+.kg-intro-banner strong{font-size:18px;line-height:1.6}.kg-intro-banner p{color:#577266;font-size:13px;line-height:1.8;margin:8px 0 0;max-width:650px}
+.kg-counts{display:flex;gap:18px;flex:none}.kg-counts span{display:flex;flex-direction:column;align-items:center;color:#678073;font-size:11px;white-space:nowrap}.kg-counts b{font-size:26px;color:#296a56}
+.kg-controls{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:0 0 23px;flex-wrap:wrap}
+.kg-search{display:flex;gap:7px;align-items:center;flex:1;max-width:480px;min-width:250px}.kg-search input{min-width:0;flex:1;height:39px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:0 12px;font-size:12px;color:var(--ink)}.kg-search .tiny-btn{height:39px;white-space:nowrap}
+.kg-cell-layout{display:grid;grid-template-columns:215px minmax(0,1fr);align-items:start;gap:23px}.kg-cell-nav{background:#fff;border:1px solid var(--line);padding:14px;border-radius:13px;position:sticky;top:96px;max-height:calc(100vh - 122px);overflow:auto}.kg-nav-group+.kg-nav-group{border-top:1px solid var(--line);padding-top:11px;margin-top:10px}
+.kg-nav-group>strong{display:block;color:#6a8378;font-size:10px;letter-spacing:.06em;margin:3px 8px 8px}.kg-cell-link{display:block;text-align:left;width:100%;font-size:12px;font-weight:700;color:#557061;background:transparent;border:1px solid transparent;border-radius:7px;padding:9px 8px;line-height:1.5}.kg-cell-link.is-sub{padding-left:22px;font-weight:500}.kg-cell-link:hover{background:#f3f7f2}.kg-cell-link.active{background:#e8f3ec;color:#1a6e55;border-color:#c9e2d2}
+.kg-cell-intro{padding:24px 25px;border:1px solid #d3e1d7;border-radius:13px;background:#fff}.kg-cell-intro h2{font-size:25px;line-height:1.5;margin:0 0 15px}.kg-cell-intro>p{font-size:13px;color:#5e746a;line-height:1.9;margin:14px 0}
+.kg-phenotype{border-left:3px solid #43977b;background:#f0f7ef;padding:12px 15px;line-height:1.7}.kg-phenotype>span{display:block;font-size:10px;color:#759083;margin-bottom:4px}.kg-phenotype strong{display:block;font-size:15px;color:#235f49;overflow-wrap:anywhere}
+.kg-role-section{margin-top:22px}.kg-role-heading{display:flex;justify-content:space-between;align-items:center;padding:0 4px 9px;border-bottom:1px solid #d9e2da}.kg-role-heading h3{font-size:15px;margin:0}.kg-role-heading span{font-size:11px;color:var(--muted)}
+.kg-row{display:grid;grid-template-columns:155px minmax(0,1fr);gap:16px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:17px 18px;margin-top:10px;min-width:0}.kg-molecule-link{border:0;background:transparent;color:#1c755b;font-size:14px;font-weight:800;padding:0;text-align:left;line-height:1.6}.kg-molecule-link:hover{text-decoration:underline}.kg-molecule-link span{font-size:11px}.kg-location{display:block;font-size:10px;color:#8a9b90;line-height:1.8;margin-top:7px}
+.kg-row-function{font-size:13px;line-height:1.9;margin:0;color:#3e5c4f}.kg-partner{font-size:11px;line-height:1.75;color:#617e6d;margin:8px 0 0}.kg-partner b{color:#4d6a5b}.kg-context{font-size:11px;color:#8a6e43;background:#fbf8ee;border-radius:6px;padding:8px 10px;margin:10px 0 0;line-height:1.8}
+.kg-sources{margin-top:11px;display:grid;gap:3px}.kg-ref{display:block;color:#82968b;font-size:10px;line-height:1.7;overflow-wrap:anywhere}.kg-ref:hover{color:var(--teal);text-decoration:underline}.kg-comparison-note,.kg-bottom-note{font-size:12px;line-height:1.9;color:#708477;border:1px dashed #cfded2;border-radius:10px;padding:16px 19px;margin-top:22px}.kg-bottom-note{background:#f0f3ec;margin-top:28px}.kg-filter-note{color:#637f70;font-size:12px;margin:15px 2px}
+.kg-list-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:17px}.kg-list-heading>span{font-size:12px;color:var(--muted)}
+.kg-molecule-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.kg-molecule-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:22px;min-width:0}.kg-card-top{display:flex;justify-content:space-between;align-items:start;gap:12px;font-size:10px;color:#7a9081;line-height:1.6}.kg-card-top>span:first-child{color:#357b60;font-weight:800}.kg-card-top>span:last-child{text-align:right;max-width:56%}.kg-molecule-card h2{font-size:22px;margin:13px 0 12px;line-height:1.5;overflow-wrap:anywhere}.kg-alias{font-size:11px;color:#8b9a90;line-height:1.8}.kg-function{font-size:14px;line-height:1.9;color:#3e5c4f;margin:10px 0}.kg-facts{font-size:12px;line-height:1.8;margin:15px 0}.kg-facts>div{display:grid;grid-template-columns:75px 1fr;gap:10px;margin-top:7px}.kg-facts dt{color:#87998d}.kg-facts dd{color:#506d5d;margin:0}.kg-related{margin-top:15px}.kg-related>small{display:block;font-size:10px;color:#90a094;margin-bottom:7px}.kg-related>div{display:flex;flex-wrap:wrap;gap:6px}.kg-tag{border:1px solid #d9e5dc;border-radius:6px;color:#537260;background:#f5f9f3;padding:5px 7px;font-size:10px;line-height:1.5;text-align:left}.kg-tag:hover{background:#e4f0e6}
+.kg-pair-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.kg-pair-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:23px;min-width:0}.kg-pair-card h2{font-size:19px;margin:0 0 15px;line-height:1.6}.kg-pair-names{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.kg-pair-names button{color:#246f56;font-weight:700;background:#eaf4ed;border:1px solid #cee3d3;border-radius:8px;padding:8px 10px;font-size:12px;text-align:left}.kg-pair-names>span{font-size:11px;color:#9aa89d}.kg-pair-card>p{font-size:13px;line-height:1.9;color:#546e5e}.kg-draft-strip{max-width:1120px;margin:24px auto 0;padding:10px 18px;color:#806a42;background:#fff5de;border:1px solid #ecdcb5;border-radius:9px;font-size:12px;line-height:1.8}
+@media(max-width:1200px){.kg-intro-banner{display:block}.kg-counts{justify-content:flex-start;gap:25px;margin-top:16px}.kg-counts span{flex-direction:row;gap:7px}.kg-counts b{font-size:22px}.kg-row{grid-template-columns:135px minmax(0,1fr);padding:16px}.kg-cell-layout{grid-template-columns:195px minmax(0,1fr)}}
+@media(max-width:900px){.kg-cell-layout{grid-template-columns:1fr}.kg-cell-nav{position:static;max-height:250px;padding:13px}.kg-cell-link{display:inline-block;width:auto;margin:3px 3px 3px 0;border-color:#e5ece4;padding:7px 10px}.kg-cell-link.is-sub{padding-left:10px}.kg-nav-group+.kg-nav-group{padding-top:8px;margin-top:8px}.kg-nav-group>strong{margin:0 0 6px}.kg-home-banner{align-items:flex-start}.kg-cell-nav{top:0}}
+@media(max-width:650px){.kg-intro-banner{padding:19px}.kg-intro-banner strong{font-size:16px}.kg-intro-banner p{font-size:12px}.kg-counts{gap:15px}.kg-counts b{font-size:20px}.kg-counts span{font-size:10px}.kg-controls{gap:12px}.kg-controls .tabs{width:100%;display:flex}.kg-controls .tab{flex:1;padding:8px 7px;font-size:11px}.kg-search{max-width:none;min-width:0;width:100%;flex-basis:100%}.kg-cell-intro{padding:19px}.kg-cell-intro h2{font-size:23px}.kg-phenotype strong{font-size:14px}.kg-row{grid-template-columns:1fr;gap:10px;padding:17px}.kg-location{margin:3px 0 0}.kg-molecule-grid,.kg-pair-grid{grid-template-columns:1fr}.kg-molecule-card,.kg-pair-card{padding:20px}.kg-molecule-card h2{font-size:21px}.kg-home-banner{padding:20px;flex-direction:column;gap:14px}.kg-home-banner strong{font-size:20px}.kg-home-banner p{font-size:12px}.kg-list-heading{align-items:flex-start}.kg-list-heading>span{font-size:11px}.kg-ref{font-size:10px}.kg-draft-strip{margin:12px 16px 0}.kg-cell-nav{max-height:220px}}
+
+
+.kg-fast-overview{border:1px solid #d5e2d8;border-radius:11px;background:#fff;margin-bottom:20px}.kg-fast-overview>summary{cursor:pointer;font-size:13px;font-weight:800;color:#39775c;padding:15px 18px}.kg-fast-scroll{overflow-x:auto;padding:0 16px 15px}.kg-fast-scroll table{width:100%;min-width:620px;border-collapse:collapse;font-size:12px;line-height:1.7}.kg-fast-scroll th,.kg-fast-scroll td{border-top:1px solid var(--line);text-align:left;padding:11px 12px;vertical-align:top}.kg-fast-scroll th{color:#7e9485;font-size:11px}.kg-fast-scroll td:first-child{min-width:145px}.kg-fast-scroll td .kg-molecule-link{font-size:12px}.kg-fast-scroll .kg-ref{font-size:10px}
+
+.bank-pagination{display:flex;justify-content:center;align-items:center;gap:16px;margin:25px 0 4px;font-size:12px;color:var(--muted)}
