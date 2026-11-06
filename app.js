@@ -4,6 +4,14 @@ var data=null;
 var quiz=null;
 var previousRoute=null;
 var pptFiles=window.PPT_FILES||[];
+var updateLog=[{
+date:'2026-11-06',title:'题库与学习功能更新',items:[
+'学习通免疫题去重后收录 283 题，标注题目来源与对应课件；存疑题暂不收录。',
+'整合发病学总论及应激、缺氧、休克、发热、缺血再灌注损伤五个专题，补充课件、题目和背诵卡。',
+'新增免疫知识点梳理，按细胞查看相关分子、作用和易混点。',
+'选择题支持选好后手动提交，显示对错与解析；答错自动加入错题本，方便回头复习。',
+'首页移除三个统计卡片，新增更新日志，方便查看网站变化。'
+]}];
 var state={bankTab:'practice',bankChapter:'all',bankType:'all',bankTopic:'all',bankSource:'all',bankPageIndex:1,reciteChapter:'all',mapModule:'immunology',bankModule:'immunology',reciteModule:'immunology',pptModule:'immunology',mistakeModule:'all',mistakeType:'all',mistakeStatus:'pending'};
 var mastery=new Set();
 try{mastery=new Set(JSON.parse(localStorage.getItem('disease-biology-mastery-v1')||'[]'));}catch(e){}
@@ -67,14 +75,16 @@ var cards=[
 {href:'ppt',icon:'▧',title:'课件 PPT',desc:'按授课顺序找到原始课件，下载后查看。'}
 ];
 return '<section class="hero"><div class="hero-copy"><div class="eyebrow">DISEASE BIOLOGY · COURSE ATLAS</div><h1>疾病的生物学基础</h1><p>免疫学和发病学按课件整理，学习通题目、资料题和考试回忆分开标明来源。通过知识梳理、练习和错题复习串起学习进度。</p><div class="hero-actions"><a class="btn btn-primary" href="#map">打开思维导图 <span>↗</span></a><a class="btn btn-secondary" href="#module/immunology">开始学免疫</a></div></div><div class="hero-art"><div class="orbit"><div class="orbit-core">疾病的<br>生物学基础</div><span class="orbit-node a">知识结构</span><span class="orbit-node b">考点定位</span><span class="orbit-node c">机制串联</span></div><div class="hero-small">LEARN · CONNECT · RECALL</div></div></section>'+
-'<div class="stats"><div class="stat"><div class="stat-icon">◈</div><div><strong>8</strong><span>课程模块</span></div></div><div class="stat"><div class="stat-icon">▤</div><div><strong>15</strong><span>免疫学章节</span></div></div><div class="stat"><div class="stat-icon">◇</div><div><strong>'+data.recall.length+'</strong><span>考试回忆条目</span></div></div></div>'+
 '<div class="section-heading"><div><div class="eyebrow">CHOOSE YOUR PATH</div><h2>从这里开始</h2><p>导图、知识梳理、练习和背诵，按学习需要进入。</p></div></div>'+
 '<div class="gateway-grid">'+cards.map(function(c){return '<a class="gateway" href="#'+c.href+'"><span class="gate-icon">'+c.icon+'</span><span class="arrow">↗</span><h3>'+c.title+'</h3><p>'+c.desc+'</p></a>';}).join('')+'</div>'+
 '<a class="kg-home-banner" href="#knowledge"><div><span class="eyebrow">细胞与分子</span><strong>知识点梳理</strong><p>CD4 T、CD8 T、B细胞…按细胞找分子，按分子查作用。</p></div><span class="kg-home-action">打开免疫学梳理 →</span></a>'+
 '<a class="notebook-entry-banner" href="#mistakes"><span><strong>错题本</strong><small>把做错的题留下，选好答案后提交，再回看解析。</small></span><span class="notebook-entry-count"><b data-notebook-count>'+quiz.pendingCount()+'</b> 题待复习 →</span></a>'+
 '<div class="section-heading" id="modules"><div><div class="eyebrow">COURSE MODULES</div><h2>课程模块</h2><p>先把已学内容整理清楚，其余内容随着课程推进补充。</p></div><span class="link">共 8 个模块</span></div>'+
 '<div class="module-grid">'+data.modules.map(function(m,i){return '<a class="module-card'+(i===0?' featured':'')+'" href="#module/'+m.id+'"><div class="mod-top"><span class="number">'+String(i+1).padStart(2,'0')+' / MODULE</span><span class="status '+statusClass(m.status)+'">'+m.status+'</span></div><h3>'+esc(m.name)+'</h3><p>'+esc(m.description)+'</p><div class="mod-foot">'+(i===0?'进入 15 章目录 →':i===1?'查看已讲主题 →':'查看模块 →')+'</div></a>';}).join('')+'</div>'+
-'<div class="study-banner"><div><strong>发病学五个专题已学完</strong><p>应激、缺氧、休克、发热、缺血再灌注损伤，已按六份PDF整理总论与专题。</p></div><a class="link" href="#module/pathogenesis">查看发病学 →</a></div>';
+'<div class="study-banner"><div><strong>发病学五个专题已学完</strong><p>应激、缺氧、休克、发热、缺血再灌注损伤，已按六份PDF整理总论与专题。</p></div><a class="link" href="#module/pathogenesis">查看发病学 →</a></div>'+homeUpdateLog();
+}
+function homeUpdateLog(){
+return '<section class="update-log" aria-labelledby="update-log-title"><div class="section-heading"><div><div class="eyebrow">WHAT’S NEW</div><h2 id="update-log-title">更新日志</h2><p>记录新增资料与功能变化。</p></div></div><ol class="update-log-list">'+updateLog.map(function(entry,i){return '<li class="update-log-entry"><div class="update-log-meta"><time datetime="'+esc(entry.date)+'">'+esc(entry.date)+'</time>'+(i===0?'<span class="update-log-latest">最新</span>':'')+'</div><div class="update-log-content"><h3>'+esc(entry.title)+'</h3><ul>'+entry.items.map(function(item){return '<li>'+esc(item)+'</li>';}).join('')+'</ul></div></li>';}).join('')+'</ol></section>';
 }
 function modulePage(id){
 var m=module(id);if(!m)return notFound();
